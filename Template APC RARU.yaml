@@ -1,0 +1,422 @@
+zabbix_export:
+  version: '6.2'
+  date: '2023-01-12T10:42:54Z'
+  template_groups:
+    -
+      uuid: 19767e83596f40c8ab868f9ad7a743e3
+      name: Templates/Power/APC/ARU
+  templates:
+    -
+      uuid: 2a19e553f6af455caf2dbc8b561e0a24
+      template: 'APC RARU'
+      name: 'APC RARU'
+      description: 'APC rack air removal init template.'
+      groups:
+        -
+          name: Templates/Power/APC/ARU
+      items:
+        -
+          uuid: f1a80eb50a974308b828e1ad0fe9d48b
+          name: 'Master ARU state'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.2.1.1.6.1
+          key: rARUConfigAruMasterControl
+          description: 'This is the master on/off control for the ARU.'
+          valuemap:
+            name: 'AC state'
+          triggers:
+            -
+              uuid: 6e65f5a7a42a44e48f605c97ce2dca90
+              expression: 'last(/APC RARU/rARUConfigAruMasterControl) <> 1'
+              name: 'ARU turned off'
+              priority: DISASTER
+              manual_close: 'YES'
+        -
+          uuid: 68a1483f656144fda9a1f97bc61facc0
+          name: 'Auxiliary AC state'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.5.1.1.3.1
+          key: rARUPowerStatusAuxiliaryAcPresent
+          description: |
+            ARU temperature probe #1 reading.
+            The summary exhaust temperature on 2nd generation ARUs.
+            NOTE:-1will be returned if the ARU is not communicating.
+            Values are represented in whole number degrees.
+            Units are displayed in the scale shown in
+            the rARUStatusSysTempUnits OID (Celsius or Fahrenheit).
+          valuemap:
+            name: 'AC state'
+        -
+          uuid: f79d323150df4e57aab472b9c8aaff0f
+          name: 'Primary AC state'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.5.1.1.2.1
+          key: rARUPowerStatusPrimaryAcPresent
+          description: |
+            ARU temperature probe #1 reading.
+            The summary exhaust temperature on 2nd generation ARUs.
+            NOTE:-1will be returned if the ARU is not communicating.
+            Values are represented in whole number degrees.
+            Units are displayed in the scale shown in
+            the rARUStatusSysTempUnits OID (Celsius or Fahrenheit).
+          valuemap:
+            name: 'AC state'
+        -
+          uuid: 036adb6b0f3348ac8a4d6ee1bfb86bef
+          name: 'Sensors temperature'
+          type: CALCULATED
+          key: rARUSensorsTemperature
+          value_type: FLOAT
+          units: °C
+          params: 'max(last_foreach(//rARUSensorsTemperature[*]))'
+        -
+          uuid: f8fdbfa26c0347b2baa93ac1e93d5a47
+          name: 'Delta temperature'
+          type: CALCULATED
+          key: rARUSensorsTemperatureDelta
+          units: °C
+          params: 'last(//rARUStatusAruTempAvg) - last(//rARUSensorsTemperature)'
+        -
+          uuid: f6d1d48971794ec9ac33dffbd5b40693
+          name: Status
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.3.3.1.10.1
+          key: rARUStatusAruAlarmState
+          triggers:
+            -
+              uuid: 78c177f068ea48b0b341e71ae45a79f0
+              expression: 'last(/APC RARU/rARUStatusAruAlarmState) <> 0'
+              name: 'Status not optimal'
+              priority: HIGH
+              manual_close: 'YES'
+        -
+          uuid: 65fbcf7fa715415eabb334d398074198
+          name: 'Exhaust temperature 1'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.3.3.1.5.1
+          key: rARUStatusAruTemp1
+          units: °C
+          description: |
+            ARU temperature probe #1 reading.
+            The summary exhaust temperature on 2nd generation ARUs.
+            NOTE:-1will be returned if the ARU is not communicating.
+            Values are represented in whole number degrees.
+            Units are displayed in the scale shown in
+            the rARUStatusSysTempUnits OID (Celsius or Fahrenheit).
+        -
+          uuid: 84f6b57dc59c49a688a249c8c97bc7b4
+          name: 'Exhaust temperature 2'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.3.3.1.6.1
+          key: rARUStatusAruTemp2
+          units: °C
+          description: |
+            ARU temperature probe #2 reading.
+            The exhaust temperature in the lower plenum on 2nd generation ARUs.
+            NOTE:-1will be returned if the ARU is not communicating.
+            Values are represented in whole number degrees.
+            Units are displayed in the scale shown in
+            the rARUStatusSysTempUnits OID (Celsius or Fahrenheit).
+        -
+          uuid: 0d57eccdaf9842e9bb01caa14449b58d
+          name: 'Exhaust temperature 3'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.3.3.1.7.1
+          key: rARUStatusAruTemp3
+          units: °C
+          description: |
+            ARU temperature probe #3 reading.
+            The exhaust temperature in the lower plenum on 2nd generation ARUs.
+            NOTE:-1will be returned if the ARU is not communicating.
+            Values are represented in whole number degrees.
+            Units are displayed in the scale shown in
+            the rARUStatusSysTempUnits OID (Celsius or Fahrenheit).
+        -
+          uuid: 1345edfe72e24e5aa2eafd0d2f34ded5
+          name: 'Exhaust Temperature'
+          type: CALCULATED
+          key: rARUStatusAruTempAvg
+          units: °C
+          params: '(last(//rARUStatusAruTemp1) +  last(//rARUStatusAruTemp2) + last(//rARUStatusAruTemp3)) / 3'
+        -
+          uuid: 1d4e8af08e31450990663d872834ca41
+          name: 'Total air flow'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.318.1.1.14.3.3.1.14.1
+          key: rARUStatusAruTotalAirflow
+          units: '!m^3/hr'
+          description: |
+            The total airflow provided by the aru. Specified in cfm (cubic feet per minute).
+            Can be converted to metric values using the conversion factor:
+            1 cfm =1.70 m^3/hr (cubic meters per hour).
+      discovery_rules:
+        -
+          uuid: 82677a93c4754dbfb99397cf886c1b70
+          name: 'Fans discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#FANINDEX}, iso.3.6.1.4.1.318.1.1.14.4.1.1.1.1]'
+          key: fans.discovery
+          delay: 1h
+          item_prototypes:
+            -
+              uuid: e32cb0467e13426f967b2f8b79c28535
+              name: 'Fan {#SNMPINDEX} state'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.4.1.1.6.1.{#SNMPINDEX}'
+              key: 'rARUFanStatusFanOperatingStatus[{#SNMPINDEX}]'
+              description: |
+                The nominal rotational speed (RPM) of the fans when they are
+                operating at the 100% level.
+              valuemap:
+                name: 'Fan status'
+              trigger_prototypes:
+                -
+                  uuid: 15b5abfa6e444ed4a55688e967547877
+                  expression: |
+                    last(/APC RARU/rARUFanStatusFanOperatingStatus[{#SNMPINDEX}]) =1 or
+                    last(/APC RARU/rARUFanStatusFanOperatingStatus[{#SNMPINDEX}]) =4 or
+                    last(/APC RARU/rARUFanStatusFanOperatingStatus[{#SNMPINDEX}]) =5
+                  name: 'Fan {#SNMPINDEX} state'
+                  manual_close: 'YES'
+            -
+              uuid: 0cc38574eb2e4ed782f3c1a539f89e3f
+              name: 'Fan {#SNMPINDEX} speed'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.4.1.1.7.1.{#SNMPINDEX}'
+              key: 'rARUFanStatusFanRpmSpeed[{#SNMPINDEX}]'
+              value_type: FLOAT
+              units: '!RPM'
+              description: |
+                The nominal rotational speed (RPM) of the fans when they are
+                operating at the 100% level.
+            -
+              uuid: 01554d441b8a4b15bab50e0632623384
+              name: 'Fan {#SNMPINDEX} usage in %'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.4.1.1.3.1.{#SNMPINDEX}'
+              key: 'rARUFanStatusSelectedFanLevel[{#SNMPINDEX}]'
+              units: '%'
+              description: |
+                The nominal rotational speed (RPM) of the fans when they are
+                operating at the 100% level.
+              valuemap:
+                name: 'Fan status'
+        -
+          uuid: 80965fb0f8b6469a89c2698977e0ae7f
+          name: 'Sensors discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SENSORNAME}, iso.3.6.1.4.1.318.1.1.14.6.4.1.3.1]'
+          key: sensors.discovery
+          delay: 1h
+          item_prototypes:
+            -
+              uuid: b96cb19460344062ab177bc0b7347a69
+              name: '{#SENSORNAME} sensor location'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.4.1.4.1.{#SNMPINDEX}'
+              key: 'rARUSensorsLocation[{#SNMPINDEX}]'
+              delay: 1h
+              trends: '0'
+              value_type: CHAR
+              preprocessing:
+                -
+                  type: CHECK_NOT_SUPPORTED
+                  parameters:
+                    - ''
+                  error_handler: CUSTOM_ERROR
+                  error_handler_params: 'There is no sensor.'
+            -
+              uuid: 13dbc91f4ed34123bc2bf491cbadbaa5
+              name: '{#SENSORNAME} sensor temperature'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.2.1.3.1.{#SNMPINDEX}'
+              key: 'rARUSensorsTemperature[{#SNMPINDEX}]'
+              value_type: FLOAT
+              units: °C
+              preprocessing:
+                -
+                  type: CHECK_NOT_SUPPORTED
+                  parameters:
+                    - ''
+                  error_handler: CUSTOM_ERROR
+                  error_handler_params: 'There is no sensor.'
+              trigger_prototypes:
+                -
+                  uuid: be1ac279f3e94c6f8c7a69ebe2eee67f
+                  expression: 'monoinc(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}],{$APC.RARU.MONOINC.TIME},"weak")=1 and last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}])>0'
+                  name: '{#SENSORNAME} sensor temperature constantly increasing during last {$APC.ARU.MONOINC.TIME}'
+                  opdata: 'Current {#SENSORNAME} sensor temperature: {ITEM.LASTVALUE}'
+                  priority: INFO
+                  manual_close: 'YES'
+                -
+                  uuid: d9fbed1edd2142b88ef8b9f39fe506e8
+                  expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > {$APC.RARU.TEMPERATURE.TREACHOLD.CRIT}'
+                  name: '{#SENSORNAME} sensor temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.CRIT}'
+                  opdata: 'Current {#SENSORNAME} sensor temperaturem: {$ITEM.LASTVALUE}'
+                  priority: DISASTER
+                  manual_close: 'YES'
+                -
+                  uuid: a0b13ec5762f420b9db709713b0aaf87
+                  expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > {$APC.RARU.TEMPERATURE.TREACHOLD.INFO}'
+                  name: '{#SENSORNAME} sensor temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.INFO}'
+                  opdata: 'Current {#SENSORNAME} sensor temperaturem: {$ITEM.LASTVALUE}'
+                  priority: INFO
+                  manual_close: 'YES'
+                -
+                  uuid: 4990024c255e44f4bd82e51611a15a39
+                  expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > {$APC.RARU.TEMPERATURE.TREACHOLD.WARN}'
+                  name: '{#SENSORNAME} sensor temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.WARN}'
+                  opdata: 'Current {#SENSORNAME} sensor temperaturem: {$ITEM.LASTVALUE}'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+            -
+              uuid: c37e7b8d21b54549ad4719779016fc94
+              name: '{#SENSORNAME} sensor high treashold'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.4.1.6.1.{#SNMPINDEX}'
+              key: 'rARUSensorsTempHighThresh[{#SNMPINDEX}]'
+              delay: 1h
+              units: °C
+              preprocessing:
+                -
+                  type: CHECK_NOT_SUPPORTED
+                  parameters:
+                    - ''
+                  error_handler: CUSTOM_ERROR
+                  error_handler_params: 'There is no sensor.'
+            -
+              uuid: 63f6e808d0ba41cea220b023495a75ce
+              name: '{#SENSORNAME} sensor low treashold'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.4.1.7.1.{#SNMPINDEX}'
+              key: 'rARUSensorsTempLowThresh[{#SNMPINDEX}]'
+              delay: 1h
+              units: °C
+              preprocessing:
+                -
+                  type: CHECK_NOT_SUPPORTED
+                  parameters:
+                    - ''
+                  error_handler: CUSTOM_ERROR
+                  error_handler_params: 'There is no sensor.'
+            -
+              uuid: 38bc013648ee4cdead9e56cf01d727ab
+              name: '{#SENSORNAME} sensor max treashold'
+              type: SNMP_AGENT
+              snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.4.1.5.1.{#SNMPINDEX}'
+              key: 'rARUSensorsTempMaxThresh[{#SNMPINDEX}]'
+              delay: 1h
+              units: °C
+              preprocessing:
+                -
+                  type: CHECK_NOT_SUPPORTED
+                  parameters:
+                    - ''
+                  error_handler: CUSTOM_ERROR
+                  error_handler_params: 'There is no sensor.'
+          trigger_prototypes:
+            -
+              uuid: 09c7ea8a43664cb2be6097fa0a24589e
+              expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > last(/APC RARU/rARUSensorsTempMaxThresh[{#SNMPINDEX}])'
+              name: '{#SENSORNAME} sensor temperature critical'
+              opdata: 'Current {#SENSORNAME} sensor temperature: {ITEM.LASTVALUE}'
+              priority: DISASTER
+              manual_close: 'YES'
+            -
+              uuid: 1558e501b45a4c72a87afd9209208157
+              expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > last(/APC RARU/rARUSensorsTempHighThresh[{#SNMPINDEX}])'
+              name: '{#SENSORNAME} sensor temperature high'
+              opdata: 'Current {#SENSORNAME} sensor temperature: {ITEM.LASTVALUE}'
+              priority: HIGH
+              manual_close: 'YES'
+          graph_prototypes:
+            -
+              uuid: 678715da490c42a6be93679691097708
+              name: '{#SENSORNAME} sensor temperature'
+              graph_items:
+                -
+                  color: 199C0D
+                  calc_fnc: ALL
+                  item:
+                    host: 'APC RARU'
+                    key: 'rARUSensorsTemperature[{#SNMPINDEX}]'
+      tags:
+        -
+          tag: class
+          value: environment
+      macros:
+        -
+          macro: '{$APC.RARU.MONOINC.TIME}'
+          value: 20m
+          description: minutes
+        -
+          macro: '{$APC.RARU.TEMPERATURE.TREACHOLD.CRIT}'
+          value: '35'
+        -
+          macro: '{$APC.RARU.TEMPERATURE.TREACHOLD.INFO}'
+          value: '25'
+        -
+          macro: '{$APC.RARU.TEMPERATURE.TREACHOLD.WARN}'
+          value: '30'
+      valuemaps:
+        -
+          uuid: 9e28d4d45a804cdf8c968c92adbb2ee0
+          name: 'AC state'
+          mappings:
+            -
+              value: '2'
+              newvalue: 'Off'
+            -
+              value: '1'
+              newvalue: 'On'
+        -
+          uuid: 4dfbf483a59240239106c2d6cd022b0d
+          name: 'Fan status'
+          mappings:
+            -
+              value: '1'
+              newvalue: unknown
+            -
+              value: '2'
+              newvalue: 'off'
+            -
+              value: '3'
+              newvalue: onOk
+            -
+              value: '4'
+              newvalue: onDegraded
+            -
+              value: '5'
+              newvalue: offFailed
+  triggers:
+    -
+      uuid: b6e86e3f1f50457baa6bad511d02d1cc
+      expression: 'last(/APC RARU/rARUPowerStatusPrimaryAcPresent)=2 or  last(/APC RARU/rARUPowerStatusAuxiliaryAcPresent)=2'
+      name: 'ARU working without AC input redundancies'
+      priority: WARNING
+      manual_close: 'YES'
+  graphs:
+    -
+      uuid: e1f9ab7ebd33467cbcce00177c630128
+      name: 'Exhaust Temperature'
+      graph_items:
+        -
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'APC RARU'
+            key: rARUStatusAruTemp1
+        -
+          sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'APC RARU'
+            key: rARUStatusAruTemp2
+        -
+          sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'APC RARU'
+            key: rARUStatusAruTemp3
