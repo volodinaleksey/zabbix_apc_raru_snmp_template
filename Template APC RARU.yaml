@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.2'
-  date: '2023-01-12T10:42:54Z'
+  date: '2023-01-12T11:42:27Z'
   template_groups:
     -
       uuid: 19767e83596f40c8ab868f9ad7a743e3
@@ -244,34 +244,34 @@ zabbix_export:
                 -
                   uuid: be1ac279f3e94c6f8c7a69ebe2eee67f
                   expression: 'monoinc(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}],{$APC.RARU.MONOINC.TIME},"weak")=1 and last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}])>0'
-                  name: '{#SENSORNAME} sensor temperature constantly increasing during last {$APC.ARU.MONOINC.TIME}'
+                  name: '{#SENSORNAME} temperature constantly increasing during last {$APC.ARU.MONOINC.TIME}'
                   opdata: 'Current {#SENSORNAME} sensor temperature: {ITEM.LASTVALUE}'
                   priority: INFO
                   manual_close: 'YES'
                 -
                   uuid: d9fbed1edd2142b88ef8b9f39fe506e8
                   expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > {$APC.RARU.TEMPERATURE.TREACHOLD.CRIT}'
-                  name: '{#SENSORNAME} sensor temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.CRIT}'
+                  name: '{#SENSORNAME} temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.CRIT}'
                   opdata: 'Current {#SENSORNAME} sensor temperaturem: {$ITEM.LASTVALUE}'
                   priority: DISASTER
                   manual_close: 'YES'
                 -
                   uuid: a0b13ec5762f420b9db709713b0aaf87
                   expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > {$APC.RARU.TEMPERATURE.TREACHOLD.INFO}'
-                  name: '{#SENSORNAME} sensor temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.INFO}'
+                  name: '{#SENSORNAME} temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.INFO}'
                   opdata: 'Current {#SENSORNAME} sensor temperaturem: {$ITEM.LASTVALUE}'
                   priority: INFO
                   manual_close: 'YES'
                 -
                   uuid: 4990024c255e44f4bd82e51611a15a39
                   expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > {$APC.RARU.TEMPERATURE.TREACHOLD.WARN}'
-                  name: '{#SENSORNAME} sensor temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.WARN}'
+                  name: '{#SENSORNAME} temperature more then {$APC.ARU.TEMPERATURE.TREACHOLD.WARN}'
                   opdata: 'Current {#SENSORNAME} sensor temperaturem: {$ITEM.LASTVALUE}'
                   priority: AVERAGE
                   manual_close: 'YES'
             -
               uuid: c37e7b8d21b54549ad4719779016fc94
-              name: '{#SENSORNAME} sensor high treashold'
+              name: '{#SENSORNAME} sensor high threshold'
               type: SNMP_AGENT
               snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.4.1.6.1.{#SNMPINDEX}'
               key: 'rARUSensorsTempHighThresh[{#SNMPINDEX}]'
@@ -286,7 +286,7 @@ zabbix_export:
                   error_handler_params: 'There is no sensor.'
             -
               uuid: 63f6e808d0ba41cea220b023495a75ce
-              name: '{#SENSORNAME} sensor low treashold'
+              name: '{#SENSORNAME} sensor low threshold'
               type: SNMP_AGENT
               snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.4.1.7.1.{#SNMPINDEX}'
               key: 'rARUSensorsTempLowThresh[{#SNMPINDEX}]'
@@ -301,7 +301,7 @@ zabbix_export:
                   error_handler_params: 'There is no sensor.'
             -
               uuid: 38bc013648ee4cdead9e56cf01d727ab
-              name: '{#SENSORNAME} sensor max treashold'
+              name: '{#SENSORNAME} sensor max threshold'
               type: SNMP_AGENT
               snmp_oid: 'iso.3.6.1.4.1.318.1.1.14.6.4.1.5.1.{#SNMPINDEX}'
               key: 'rARUSensorsTempMaxThresh[{#SNMPINDEX}]'
@@ -318,14 +318,14 @@ zabbix_export:
             -
               uuid: 09c7ea8a43664cb2be6097fa0a24589e
               expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > last(/APC RARU/rARUSensorsTempMaxThresh[{#SNMPINDEX}])'
-              name: '{#SENSORNAME} sensor temperature critical'
+              name: '{#SENSORNAME} temperature critical'
               opdata: 'Current {#SENSORNAME} sensor temperature: {ITEM.LASTVALUE}'
               priority: DISASTER
               manual_close: 'YES'
             -
               uuid: 1558e501b45a4c72a87afd9209208157
               expression: 'last(/APC RARU/rARUSensorsTemperature[{#SNMPINDEX}]) > last(/APC RARU/rARUSensorsTempHighThresh[{#SNMPINDEX}])'
-              name: '{#SENSORNAME} sensor temperature high'
+              name: '{#SENSORNAME} temperature high'
               opdata: 'Current {#SENSORNAME} sensor temperature: {ITEM.LASTVALUE}'
               priority: HIGH
               manual_close: 'YES'
@@ -348,7 +348,7 @@ zabbix_export:
         -
           macro: '{$APC.RARU.MONOINC.TIME}'
           value: 20m
-          description: minutes
+          description: 'Threshold for temperature mono increasing time.'
         -
           macro: '{$APC.RARU.TEMPERATURE.TREACHOLD.CRIT}'
           value: '35'
