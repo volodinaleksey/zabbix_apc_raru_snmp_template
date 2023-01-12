@@ -21,9 +21,11 @@ This template was tested on:
 ## Setup
 Enable SNMP on target device:
 
+![SNMP settings](SNMP settings.png)
 
 Adjust units:
 
+![SNMP settings](Units.png)
 
 ## Author
 
