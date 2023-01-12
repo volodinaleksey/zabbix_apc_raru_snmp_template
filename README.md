@@ -5,7 +5,7 @@ For Zabbix version: 6.2 and higher.
 
 SNMP is using for APC RARU monitoring.
 
-SOme triggers using preconfigured threshold, probably you should adjust this settings for your environment.
+Some triggers using preconfigured threshold, probably you should adjust this settings for your environment.
 
 The template is developed for monitoring singe RARU with no or multiply sensors:
 * Overall RARU state
